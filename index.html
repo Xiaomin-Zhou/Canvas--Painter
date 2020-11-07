@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>画线</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <canvas id="canvas" width="100" height="100"></canvas>
+    <script>
+        //画线
+        let canvas = document.getElementById("canvas");
+        canvas.width = document.documentElement.clientWidth
+        canvas.height = document.documentElement.clientHeight
+        let ctx = canvas.getContext("2d");
+        ctx.fillStyle = "black"; 
+        ctx.strokeStyle = 'none';
+        ctx.lineWidth = '8';
+        ctx.lineCap = "round";
+
+        let painting = false;
+
+        let last;
+
+    //检测手机设备
+        function is_touch_device() {  
+        try {  
+            document.createEvent("TouchEvent");  
+            return true;  
+        } catch (e) {  
+            return false;  
+        }  
+    }
+    // 判断是手机设备后，用drawLine画线，保留上次画的点
+      if(is_touch_device()){
+        canvas.ontouchstart =(e)=>{
+            let x = e.touches[0].clientX;
+            let y = e.touches[0].clientY;
+            // 起点
+            last = [x,y];
+        }
+        canvas.ontouchmove = (e)=>{
+            let x = e.touches[0].clientX;
+            let y = e.touches[0].clientY;
+            drawLine(last[0],last[1],x,y);
+            // 时时更新 last
+            last = [x,y];
+        }
+      }else{
+        // 判断在PC端，painting 是用来 停/起 笔的;
+        canvas.onmousedown = (e) =>{
+            painting = true;
+            last = [e.clientX, e.clientY];
+        }
+        canvas.onmouseup = (e) =>{
+            painting = false;
+        }
+
+        canvas.onmousemove = (e)=>{
+            if (painting === true){
+
+            drawLine(last[0],last[1],e.clientX, e.clientY);
+            last = [e.clientX, e.clientY];
+            }
+        }
+      }
+
+      // 两点之间用canvas画线的 函数
+      function drawLine(x1,y1,x2,y2){
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
+      }
+
+
+    </script>
+    
+</body>
+</html>
